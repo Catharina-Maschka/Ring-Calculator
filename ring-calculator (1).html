@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Bowl Ring Calculator</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=Source+Sans+3:wght@300;400;600&family=Source+Code+Pro:wght@400;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --ink: #1a1209;
+    --paper: #f5f0e8;
+    --warm: #c8893a;
+    --warm-light: #f0d9b5;
+    --warm-pale: #faf5ec;
+    --accent: #7a3e1a;
+    --grey: #6b5e4e;
+    --rule: #d4c4a8;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    background: var(--ink);
+    color: var(--paper);
+    font-family: 'Source Sans 3', sans-serif;
+    font-weight: 300;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 40px 20px;
+  }
+
+  .card {
+    background: #231a10;
+    border: 1px solid #4a3a28;
+    border-top: 3px solid var(--warm);
+    max-width: 560px;
+    width: 100%;
+    padding: 40px;
+  }
+
+  .tag {
+    font-family: 'Source Code Pro', monospace;
+    font-size: 10px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--warm);
+    margin-bottom: 10px;
+  }
+
+  h1 {
+    font-family: 'Playfair Display', serif;
+    font-size: 32px;
+    font-weight: 900;
+    margin-bottom: 8px;
+    line-height: 1.1;
+  }
+
+  h1 span { color: var(--warm); }
+
+  .subtitle {
+    font-size: 14px;
+    color: #7a6e60;
+    margin-bottom: 32px;
+    line-height: 1.6;
+  }
+
+  .divider {
+    border: none;
+    border-top: 1px solid #4a3a28;
+    margin: 24px 0;
+  }
+
+  .field-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    margin-bottom: 20px;
+  }
+  @media(max-width:480px){ .field-grid { grid-template-columns: 1fr; } }
+
+  .field label {
+    font-family: 'Source Code Pro', monospace;
+    font-size: 10px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--warm);
+    display: block;
+    margin-bottom: 6px;
+  }
+
+  .field input[type="number"] {
+    width: 100%;
+    padding: 10px 12px;
+    background: #2e2416;
+    border: 1px solid #4a3a28;
+    color: var(--paper);
+    font-family: 'Source Code Pro', monospace;
+    font-size: 15px;
+    outline: none;
+    transition: border-color 0.2s;
+  }
+  .field input[type="number"]:focus { border-color: var(--warm); }
+
+  .field .hint {
+    font-size: 11px;
+    color: #5a4e40;
+    margin-top: 4px;
+  }
+
+  .options-row {
+    display: flex;
+    gap: 24px;
+    flex-wrap: wrap;
+    align-items: center;
+    margin-bottom: 24px;
+  }
+
+  .checkbox-label {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 14px;
+    color: #c9bfb0;
+    cursor: pointer;
+  }
+  .checkbox-label input { accent-color: var(--warm); width: 16px; height: 16px; cursor: pointer; }
+
+  .inline-field {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .inline-field label {
+    font-size: 14px;
+    color: #c9bfb0;
+    white-space: nowrap;
+  }
+  .inline-field input {
+    width: 64px;
+    padding: 6px 10px;
+    background: #2e2416;
+    border: 1px solid #4a3a28;
+    color: var(--paper);
+    font-family: 'Source Code Pro', monospace;
+    font-size: 14px;
+    outline: none;
+  }
+  .inline-field input:focus { border-color: var(--warm); }
+  .inline-field span { font-size: 13px; color: #5a4e40; }
+
+  button {
+    width: 100%;
+    background: var(--warm);
+    color: var(--ink);
+    border: none;
+    padding: 14px;
+    font-family: 'Source Code Pro', monospace;
+    font-size: 12px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.2s;
+    margin-bottom: 28px;
+  }
+  button:hover { background: #d99a4a; }
+
+  #result { display: none; }
+
+  .summary {
+    font-family: 'Source Code Pro', monospace;
+    font-size: 12px;
+    color: #7a6e60;
+    letter-spacing: 1px;
+    margin-bottom: 16px;
+  }
+  .summary span { color: var(--warm); }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-family: 'Source Code Pro', monospace;
+    font-size: 13px;
+  }
+  thead th {
+    background: #2e2416;
+    color: var(--warm);
+    padding: 10px 14px;
+    text-align: left;
+    font-size: 10px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+  }
+  tbody td {
+    padding: 9px 14px;
+    border-bottom: 1px solid #2e2416;
+    color: var(--paper);
+  }
+  tbody tr:nth-child(even) td { background: #1f1710; }
+  tbody tr.top-ring td { background: #3a2e1a; color: #f0d9b5; }
+
+  footer {
+    margin-top: 24px;
+    font-family: 'Source Code Pro', monospace;
+    font-size: 10px;
+    letter-spacing: 2px;
+    color: #3a2e1a;
+    text-align: center;
+  }
+</style>
+</head>
+<body>
+
+<div class="card">
+  <p class="tag">Group 28</p>
+  <h1>Bowl Ring <span>Calculator</span></h1>
+  <p class="subtitle">Enter your bulb dimensions and the calculator will generate the full ring cutting table for your bowl.</p>
+
+  <div class="field-grid">
+    <div class="field">
+      <label>Bulb max diameter (mm)</label>
+      <input id="bulbMax" type="number" value="75">
+      <p class="hint">widest point of the bulb</p>
+    </div>
+    <div class="field">
+      <label>Bulb neck diameter (mm)</label>
+      <input id="bulbNeck" type="number" value="30">
+      <p class="hint">diameter at the base/neck</p>
+    </div>
+    <div class="field">
+      <label>Bulb height (mm)</label>
+      <input id="bulbHeight" type="number" value="48">
+      <p class="hint">height the bowl needs to grip</p>
+    </div>
+    <div class="field">
+      <label>Board thickness (mm)</label>
+      <input id="boardThick" type="number" value="6">
+      <p class="hint">thickness of your wood sheet</p>
+    </div>
+  </div>
+
+  <div class="options-row">
+    <label class="checkbox-label">
+      <input id="useLining" type="checkbox" checked>
+      Using 3mm sponge lining?
+    </label>
+    <div class="inline-field">
+      <label>Wall thickness:</label>
+      <input id="wallThick" type="number" value="10">
+      <span>mm</span>
+    </div>
+  </div>
+
+  <button onclick="calcRings()">Calculate Rings</button>
+
+  <div id="result">
+    <hr class="divider" style="margin-top:0;">
+    <p class="summary" id="summary"></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Ring</th>
+          <th>Inner Ø (cut)</th>
+          <th>Outer Ø (cut)</th>
+        </tr>
+      </thead>
+      <tbody id="tableBody"></tbody>
+    </table>
+    <p style="font-size:11px; color:#5a4e40; margin-top:12px; font-family:'Source Code Pro',monospace;">
+      * Inner diameters include +5mm clearance and lining offset where applicable.<br>
+      * Also cut one solid base disc at the Ring 1 outer diameter.
+    </p>
+  </div>
+</div>
+
+<footer>BULB BUDDY · GROUP 28</footer>
+
+<script>
+function calcRings() {
+  var bulbMax    = parseFloat(document.getElementById('bulbMax').value);
+  var bulbNeck   = parseFloat(document.getElementById('bulbNeck').value);
+  var bulbHeight = parseFloat(document.getElementById('bulbHeight').value);
+  var boardThick = parseFloat(document.getElementById('boardThick').value);
+  var useLining  = document.getElementById('useLining').checked;
+  var wallThick  = parseFloat(document.getElementById('wallThick').value);
+
+  var liningOffset = useLining ? 6 : 0;
+  var numRings = Math.max(2, Math.round(bulbHeight / boardThick));
+
+  var topInner  = bulbMax + 5 + liningOffset;
+  var baseInner = bulbNeck + liningOffset;
+  var step = (topInner - baseInner) / (numRings - 1);
+
+  document.getElementById('summary').innerHTML =
+    '<span>' + numRings + ' rings</span> needed &nbsp;·&nbsp; ' +
+    '<span>' + (numRings * boardThick) + 'mm</span> total height' +
+    (useLining ? ' &nbsp;·&nbsp; includes 3mm lining offset' : '');
+
+  var tbody = document.getElementById('tableBody');
+  tbody.innerHTML = '';
+  for (var i = 0; i < numRings; i++) {
+    var inner = baseInner + i * step;
+    var outer = inner + 2 * wallThick;
+    var label = i === 0 ? '1 — Base' : i === numRings - 1 ? (i+1) + ' — Top' : (i+1) + '';
+    var cls   = i === numRings - 1 ? 'top-ring' : '';
+    var innerCell = i === 0 ? '<em style="color:#5a4e40;">solid disc</em>' : inner.toFixed(1) + ' mm';
+    var outerVal  = i === 0 ? (baseInner + liningOffset).toFixed(1) : outer.toFixed(1);
+    tbody.innerHTML +=
+      '<tr class="' + cls + '">' +
+      '<td>' + label + '</td>' +
+      '<td>' + innerCell + '</td>' +
+      '<td>' + outerVal + ' mm</td>' +
+      '</tr>';
+  }
+
+  document.getElementById('result').style.display = 'block';
+}
+
+window.addEventListener('load', calcRings);
+</script>
+</body>
+</html>
